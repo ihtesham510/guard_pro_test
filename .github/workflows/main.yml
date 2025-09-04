@@ -76,66 +76,66 @@ jobs:
             mobile/build/app/outputs/flutter-apk/*.apk
             mobile/build/app/outputs/bundle/release/app-release.aab
 
-  build-ios:
-    runs-on: macos-latest
-    steps:
-      - name: 📂 Checkout code
-        uses: actions/checkout@v4
-
-      - name: 🚀 Cache pub deps
-        uses: actions/cache@v4
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
-          restore-keys: ${{ runner.os }}-pub-
-
-      - name: 🦋 Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-
-      - name: 📝 Create .env file
-        run: |
-          echo "${{ secrets.DATABASE_URL }}" > .env
-          echo "${{ secrets.SUPABASE_URL }}" >> .env
-          echo "${{ secrets.SUPABASE_ANON_KEY }}" >> .env
-        working-directory: mobile
-
-      - name: 📥 Get Flutter dependencies
-        run: flutter pub get
-        working-directory: mobile
-
-      - name: ✅ Analyze for issues
-        run: flutter analyze
-        working-directory: mobile
-
-      - name: 📱 Install CocoaPods
-        run: |
-          cd ios
-          pod install
-        working-directory: mobile
-
-      - name: 🏗️ Build iOS (No Code Signing)
-        run: flutter build ios --release --no-codesign
-        working-directory: mobile
-
-      - name: 📦 Create iOS Archive
-        run: |
-          cd build/ios/iphoneos
-          mkdir -p Payload
-          cp -r Runner.app Payload/
-          zip -r app-release-ios.zip Payload
-        working-directory: mobile
-
-      - name: 🗑️ Delete .env file
-        run: rm -rf .env
-        working-directory: mobile
-
-      - name: 📤 Upload iOS artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-builds
-          path: mobile/build/ios/iphoneos/app-release-ios.zip
+  # build-ios:
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: 📂 Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: 🚀 Cache pub deps
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: ~/.pub-cache
+  #         key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
+  #         restore-keys: ${{ runner.os }}-pub-
+  #
+  #     - name: 🦋 Setup Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         channel: "stable"
+  #
+  #     - name: 📝 Create .env file
+  #       run: |
+  #         echo "${{ secrets.DATABASE_URL }}" > .env
+  #         echo "${{ secrets.SUPABASE_URL }}" >> .env
+  #         echo "${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+  #       working-directory: mobile
+  #
+  #     - name: 📥 Get Flutter dependencies
+  #       run: flutter pub get
+  #       working-directory: mobile
+  #
+  #     - name: ✅ Analyze for issues
+  #       run: flutter analyze
+  #       working-directory: mobile
+  #
+  #     - name: 📱 Install CocoaPods
+  #       run: |
+  #         cd ios
+  #         pod install
+  #       working-directory: mobile
+  #
+  #     - name: 🏗️ Build iOS (No Code Signing)
+  #       run: flutter build ios --release --no-codesign
+  #       working-directory: mobile
+  #
+  #     - name: 📦 Create iOS Archive
+  #       run: |
+  #         cd build/ios/iphoneos
+  #         mkdir -p Payload
+  #         cp -r Runner.app Payload/
+  #         zip -r app-release-ios.zip Payload
+  #       working-directory: mobile
+  #
+  #     - name: 🗑️ Delete .env file
+  #       run: rm -rf .env
+  #       working-directory: mobile
+  #
+  #     - name: 📤 Upload iOS artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ios-builds
+  #         path: mobile/build/ios/iphoneos/app-release-ios.zip
 
   create-release:
     needs: [build-android, build-ios]
@@ -151,11 +151,11 @@ jobs:
           name: android-builds
           path: ./android-builds
 
-      - name: 📥 Download iOS artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ios-builds
-          path: ./ios-builds
+      # - name: 📥 Download iOS artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: ios-builds
+      #     path: ./ios-builds
 
       - name: 🏷️ Get release version
         id: get_version
@@ -174,14 +174,11 @@ jobs:
             ### What's included:
             - 📱 Android APKs (split per ABI)
             - 📦 Android App Bundle (app-release.aab)
-            - 🍎 iOS Archive (app-release-ios.zip)
 
             ### Installation:
             - **Android**: Download and install the appropriate APK file for your device architecture
-            - **iOS**: Download the iOS archive (requires development provisioning profile)
           files: |
             android-builds/*.apk
             android-builds/app-release.aab
-            ios-builds/app-release-ios.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
