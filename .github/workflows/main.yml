@@ -43,9 +43,11 @@ jobs:
 
       - name: 📝 Create .env file
         run: |
-          echo "${{ secrets.DATABASE_URL }}" > .env
-          echo "${{ secrets.SUPABASE_URL }}" >> .env
-          echo "${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+          cat > .env <<EOF
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          EOF
         working-directory: mobile
 
       - name: 📥 Get Flutter dependencies
