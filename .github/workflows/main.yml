@@ -64,10 +64,6 @@ jobs:
         run: flutter build appbundle --release
         working-directory: mobile
 
-      - name: 🗑️ Delete .env file
-        run: rm -rf .env
-        working-directory: mobile
-
       - name: 📤 Upload Android artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -75,6 +71,10 @@ jobs:
           path: |
             mobile/build/app/outputs/flutter-apk/*.apk
             mobile/build/app/outputs/bundle/release/app-release.aab
+
+      - name: 🗑️ Delete .env file
+        run: rm -rf .env
+        working-directory: mobile
 
   create-release:
     needs: [build-android]
