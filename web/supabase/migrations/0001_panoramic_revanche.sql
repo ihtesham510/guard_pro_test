@@ -1,0 +1,1 @@
+ALTER TABLE "posts_table" RENAME COLUMN "content_title" TO "title";
