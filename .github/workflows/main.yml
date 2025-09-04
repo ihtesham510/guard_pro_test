@@ -73,7 +73,7 @@ jobs:
         with:
           name: android-builds
           path: |
-            mobile/build/app/outputs/flutter-apk/*.apk
+            mobile/build/app/outputs/apk/release/baselineProfiles/*.apk
             mobile/build/app/outputs/bundle/release/app-release.aab
 
   create-release:
@@ -111,7 +111,7 @@ jobs:
             ### Installation:
             - **Android**: Download and install the appropriate APK file for your device architecture
           files: |
-            android-builds/flutter-apk/*.apk
-            android-builds/bundle/release/app-release.aab
+            android-builds/baselineProfiles/*.apk
+            android-builds/app-release.aab
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
