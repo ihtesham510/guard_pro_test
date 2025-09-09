@@ -24,7 +24,19 @@ export function SignUpForm() {
 		resolver: zodResolver(formSchema),
 	})
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-		await authClient.signUp.email(values)
+		const res = await authClient.signUp.email(values, {
+			onError(ctx) {
+				console.log('error', { code: ctx.error.code, message: ctx.error.message })
+				if (ctx.error.code === 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL') {
+					form.setError('email', {
+						message: 'Email already exits, please sign in instead',
+					})
+				}
+			},
+		})
+		if (res.error) {
+			return
+		}
 		await queryClient.invalidateQueries()
 		await router.invalidate()
 	}
