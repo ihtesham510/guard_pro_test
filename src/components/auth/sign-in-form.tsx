@@ -23,9 +23,19 @@ export function SignInForm() {
 		resolver: zodResolver(formSchema),
 	})
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-		await authClient.signIn.email(values)
-		await queryClient.invalidateQueries()
-		await router.invalidate()
+		await authClient.signIn.email(values, {
+			onError({ error }) {
+				if (error.code === 'INVALID_EMAIL_OR_PASSWORD') {
+					form.setError('email', {
+						message: 'Invalid email or password',
+					})
+				}
+			},
+			async onSuccess() {
+				await queryClient.invalidateQueries()
+				await router.invalidate()
+			},
+		})
 	}
 
 	return (
