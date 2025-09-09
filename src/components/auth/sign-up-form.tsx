@@ -11,21 +11,11 @@ import { SocialLogins } from '@/components/auth/social-logins'
 import { PasswordInput } from '@/components/ui/password-input'
 import { useQueryClient } from '@tanstack/react-query'
 
-const formSchema = z
-	.object({
-		email: z.email(),
-		password: z.string().min(8).max(18),
-		confirm_password: z.string().min(8).max(18),
-	})
-	.superRefine(({ password, confirm_password }, ctx) => {
-		if (password === confirm_password) {
-			ctx.addIssue({
-				code: 'custom',
-				message: 'Passwords do not match',
-				path: ['confirmPassword'],
-			})
-		}
-	})
+const formSchema = z.object({
+	name: z.string(),
+	email: z.email(),
+	password: z.string().min(8).max(18),
+})
 
 export function SignUpForm() {
 	const router = useRouter()
@@ -34,7 +24,7 @@ export function SignUpForm() {
 		resolver: zodResolver(formSchema),
 	})
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-		await authClient.signIn.email(values)
+		await authClient.signUp.email(values)
 		await queryClient.invalidateQueries()
 		await router.invalidate()
 	}
@@ -61,6 +51,21 @@ export function SignUpForm() {
 						</div>
 						<div className='flex flex-col gap-6'>
 							<div className='grid gap-3'>
+								<FormField
+									control={form.control}
+									name='name'
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Name</FormLabel>
+											<FormControl>
+												<Input {...field} />
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+							</div>
+							<div className='grid gap-3'>
 								{' '}
 								<FormField
 									control={form.control}
@@ -83,21 +88,6 @@ export function SignUpForm() {
 									render={({ field }) => (
 										<FormItem>
 											<FormLabel>Password</FormLabel>
-											<FormControl>
-												<PasswordInput {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-							</div>
-							<div className='grid gap-3'>
-								<FormField
-									control={form.control}
-									name='confirm_password'
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Confirm Password</FormLabel>
 											<FormControl>
 												<PasswordInput {...field} />
 											</FormControl>
