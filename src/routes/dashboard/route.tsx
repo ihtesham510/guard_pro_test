@@ -1,6 +1,10 @@
+import { AppSidebar } from '@/components/sidebar'
 import { Button } from '@/components/ui/button'
-import { authClient } from '@/lib/auth-client'
-import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
+import { Input } from '@/components/ui/input'
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { Bell, Search } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 
 export const Route = createFileRoute('/dashboard')({
 	component: RouteComponent,
@@ -14,20 +18,34 @@ export const Route = createFileRoute('/dashboard')({
 })
 
 function RouteComponent() {
-	const router = useRouter()
-	const { queryClient } = Route.useRouteContext()
 	return (
-		<div>
-			Hello "/dashboard"!
-			<Button
-				onClick={async () => {
-					await authClient.signOut()
-					await queryClient.invalidateQueries()
-					await router.invalidate()
-				}}
-			>
-				Sign Out
-			</Button>
-		</div>
+		<SidebarProvider
+			style={
+				{
+					'--sidebar-width': 'calc(var(--spacing) * 72)',
+					'--sidebar-height': 'calc(var(--spacing) * 16)',
+				} as React.CSSProperties
+			}
+		>
+			<AppSidebar variant='inset' collapsible='icon' />
+			<SidebarInset className='p-4'>
+				<header className='flex justify-between items-center mb-4 w-full'>
+					<div className='flex gap-2 items-center'>
+						<SidebarTrigger />
+						<div className='flex flex-1 gap-x-4 self-stretch lg:gap-x-6 max-w-[400px]'>
+							<div className='relative flex flex-1 items-center'>
+								<Search className='absolute left-4 h-4 w-4 text-muted-foreground' />
+								<Input placeholder='Search guards, incidents, shifts...' className='pl-10 w-full max-w-md' />
+							</div>
+						</div>
+					</div>
+					<Button variant='ghost' size='sm' className='relative'>
+						<Bell className='h-5 w-5' />
+						<Badge className='absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs bg-primary'>3</Badge>
+					</Button>
+				</header>
+				<Outlet />
+			</SidebarInset>
+		</SidebarProvider>
 	)
 }

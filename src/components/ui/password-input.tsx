@@ -1,11 +1,10 @@
 import * as React from 'react'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
-
 import { Button } from '@/components/ui/button'
-import { Input, type InputProps } from '@/components/ui/input'
+import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 
-export function PasswordInput({ className, ...props }: InputProps) {
+export function PasswordInput({ className, ...props }: React.ComponentProps<'input'>) {
 	const [showPassword, setShowPassword] = React.useState(false)
 
 	const isDisabled = props.value === '' || props.value === undefined || props.disabled

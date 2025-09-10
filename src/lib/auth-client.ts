@@ -7,17 +7,17 @@ export const authClient = createAuthClient({
 })
 
 export const useAuthentication = () => {
-	const { data: userSession } = useSuspenseQuery(authQueries.user())
+	const { data } = useSuspenseQuery(authQueries.user())
 
-	return { userSession, isAuthenticated: !!userSession }
+	return { session: data?.session ?? null, user: data?.user ?? null, isAuthenticated: !!data }
 }
 
-export const useAuthenticatedUser = () => {
-	const { userSession } = useAuthentication()
+export const useUser = () => {
+	const { session, user } = useAuthentication()
 
-	if (!userSession) {
+	if (!user || !session) {
 		throw new Error('User is not authenticated!')
 	}
 
-	return userSession
+	return { session, user }
 }

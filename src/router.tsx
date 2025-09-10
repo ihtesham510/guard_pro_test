@@ -10,6 +10,7 @@ export const createRouter = () => {
 	const router = createTanstackRouter({
 		routeTree,
 		context: { queryClient },
+		defaultNotFoundComponent: () => <div>Page Not Found</div>,
 		defaultPreload: 'intent',
 		Wrap: (props: { children: React.ReactNode }) => {
 			return <QueryClientProvider client={queryClient}>{props.children}</QueryClientProvider>
