@@ -1,4 +1,4 @@
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react'
+import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LoaderCircle, LogOut, Sparkles } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -11,6 +11,9 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
+import { authClient } from '@/lib/auth-client'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useRouter } from '@tanstack/react-router'
 
 export function NavUser({
 	user,
@@ -22,6 +25,16 @@ export function NavUser({
 	}
 }) {
 	const { isMobile } = useSidebar()
+	const queryClient = useQueryClient()
+	const router = useRouter()
+
+	const signOutMutation = useMutation({
+		mutationFn: async () => {
+			await authClient.signOut()
+			await queryClient.invalidateQueries()
+			await router.invalidate()
+		},
+	})
 
 	return (
 		<SidebarMenu>
@@ -84,9 +97,24 @@ export function NavUser({
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem>
-							<LogOut />
-							Log out
+						<DropdownMenuItem
+							disabled={signOutMutation.isPending}
+							onClick={e => {
+								e.stopPropagation()
+								e.preventDefault()
+								signOutMutation.mutate()
+							}}
+						>
+							{signOutMutation.isPending ? (
+								<div className='flex justify-center w-full'>
+									<LoaderCircle className='size-4 animate-spin' />
+								</div>
+							) : (
+								<>
+									<LogOut />
+									Log out
+								</>
+							)}
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

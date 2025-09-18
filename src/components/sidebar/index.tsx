@@ -3,11 +3,18 @@ import { Sidebar, SidebarHeader } from '@/components/ui/sidebar'
 import { NavUser } from './nav-user'
 import { useUser } from '@/lib/auth-client'
 import { NavMain, NavMainProps } from './nav-main'
-import { useMatchRoute } from '@tanstack/react-router'
+import { useMatchRoute, useRouter } from '@tanstack/react-router'
 import { LayoutIcon } from 'lucide-react'
 
-export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
-	const { user } = useUser()
+interface SideBarProps extends React.ComponentProps<typeof Sidebar> {
+	user: {
+		email: string
+		name: string
+		image?: string
+	}
+}
+
+export function AppSidebar(props: SideBarProps) {
 	const route = useMatchRoute()
 	const items: NavMainProps['items'] = [
 		{
@@ -27,9 +34,9 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 			<SidebarHeader className='pb-2'>
 				<NavUser
 					user={{
-						avatar: user.image ?? undefined,
-						email: user.email,
-						name: user.name,
+						avatar: props.user.image ?? undefined,
+						email: props.user.email,
+						name: props.user.name,
 					}}
 				/>
 			</SidebarHeader>

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, AlertTriangle, Shield, DollarSign, TrendingUp, TrendingDown } from 'lucide-react'
+import { Users, AlertTriangle, Shield, DollarSign, TrendingUp, TrendingDown, LucideIcon } from 'lucide-react'
 
 const kpiData = [
 	{
@@ -36,7 +36,18 @@ const kpiData = [
 	},
 ]
 
-export function KPICards() {
+interface Props {
+	cards: {
+		title: string
+		value: string
+		change: string
+		trend: 'up' | 'down'
+		icon: LucideIcon
+		color: 'text-green-600'
+	}[]
+}
+
+export function KPICards({ cards }: Props) {
 	return (
 		<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
 			{kpiData.map(kpi => (
